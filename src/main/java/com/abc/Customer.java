@@ -3,6 +3,11 @@ package com.abc;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.abc.accountimpl.CheckingAccount;
+import com.abc.accountimpl.MaxiSavingsAccount;
+import com.abc.accountimpl.SavingsAccount;
+import com.abc.exceptions.AccountTransferException;
+
 import static java.lang.Math.abs;
 
 public class Customer {
@@ -51,13 +56,13 @@ public class Customer {
 
        //Translate to pretty account type
         switch(a.getAccountType()){
-            case Account.CHECKING:
+            case CheckingAccount.CHECKING:
                 s += "Checking Account\n";
                 break;
-            case Account.SAVINGS:
+            case SavingsAccount.SAVINGS:
                 s += "Savings Account\n";
                 break;
-            case Account.MAXI_SAVINGS:
+            case MaxiSavingsAccount.MAXI_SAVINGS:
                 s += "Maxi Savings Account\n";
                 break;
         }
@@ -74,5 +79,30 @@ public class Customer {
 
     private String toDollars(double d){
         return String.format("$%,.2f", abs(d));
+    }
+    
+    //This needs to happen in one transaction
+    public boolean transferMoney(Account fromAccount,Account toAccount,double transferAmt) throws AccountTransferException{
+    	
+    	if(fromAccount.getAccountType() == toAccount.getAccountType()){
+    		throw new AccountTransferException("Transfer money is not allowed between the same account type for the customer");
+    	}
+    	
+        if (transferAmt <= 0) {
+            throw new IllegalArgumentException("amount must be greater than zero");
+        }
+
+        fromAccount.withdraw(transferAmt);
+        
+        fromAccount.transactions.add(new Transaction(-transferAmt));
+        
+        toAccount.deposit(transferAmt);
+        
+        toAccount.transactions.add(new Transaction(transferAmt));
+
+    	
+		return true;
+    	
+        
     }
 }

@@ -3,6 +3,8 @@ package com.abc;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.abc.exceptions.CustomerNotFoundException;
+
 public class Bank {
     private List<Customer> customers;
 
@@ -34,13 +36,14 @@ public class Bank {
         return total;
     }
 
-    public String getFirstCustomer() {
+    public String getFirstCustomer() throws CustomerNotFoundException{
         try {
-            customers = null;
-            return customers.get(0).getName();
+            if(null != customers && customers.size() > 0)
+            	return customers.get(0).getName();
+            else
+            	throw new CustomerNotFoundException();
         } catch (Exception e){
-            e.printStackTrace();
-            return "Error";
+        	throw new CustomerNotFoundException();
         }
     }
 }
